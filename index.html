@@ -1,0 +1,239 @@
+<html><head><base href="." /><title>Transformação Automática de Discussões - Reuni</title>
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 800px;
+    width: 100%;
+}
+
+.topic-button {
+    width: 100%;
+    padding: 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #4A90E2, #5CB3FF);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topic-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+}
+
+.content-panel {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    display: none;
+    animation: slideDown 0.3s ease-out;
+}
+
+.task-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.task-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.ai-suggestions {
+    background: #EBF5FF;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #d1e5ff;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.ai-icon {
+    background: #4A90E2;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.loading-animation {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #4A90E2;
+    border-radius: 50%;
+    animation: bounce 0.5s infinite alternate;
+}
+
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    to { transform: translateY(-8px); }
+}
+
+.accept-button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <button class="topic-button" onclick="toggleContent()">
+        <span>
+            <svg class="metric-icon" width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+            </svg>
+            Transformação Automática de Discussões
+        </span>
+        <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+        </svg>
+    </button>
+
+    <div id="contentPanel" class="content-panel">
+        <div class="task-container">
+            <textarea class="task-input" placeholder="Digite ou cole o texto da discussão aqui..." rows="4"></textarea>
+            <button onclick="analyzeDiscussion()" class="topic-button" style="margin-top: 10px;">
+                Analisar Discussão
+            </button>
+            
+            <div class="loading-animation" id="loadingAnimation">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="ai-suggestions" id="aiSuggestions">
+                <h3>Sugestões da IA</h3>
+                <div id="suggestionsList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleContent() {
+    const contentPanel = document.getElementById('contentPanel');
+    const arrowIcon = document.querySelector('.arrow-icon');
+    
+    if (contentPanel.style.display === 'none' || contentPanel.style.display === '') {
+        contentPanel.style.display = 'block';
+        arrowIcon.classList.add('rotate');
+    } else {
+        contentPanel.style.display = 'none';
+        arrowIcon.classList.remove('rotate');
+    }
+}
+
+function analyzeDiscussion() {
+    const loadingAnimation = document.getElementById('loadingAnimation');
+    const suggestionsList = document.getElementById('suggestionsList');
+    loadingAnimation.style.display = 'flex';
+    suggestionsList.innerHTML = '';
+
+    // Simulando processamento da IA
+    setTimeout(() => {
+        loadingAnimation.style.display = 'none';
+        
+        const mockSuggestions = [
+            {
+                task: "Atualizar documentação do projeto",
+                assignee: "Ana Silva",
+                deadline: "Próxima segunda-feira",
+                priority: "Alta"
+            },
+            {
+                task: "Agendar reunião com stakeholders",
+                assignee: "Carlos Santos",
+                deadline: "Esta sexta-feira",
+                priority: "Média"
+            },
+            {
+                task: "Revisar métricas de desempenho",
+                assignee: "Marina Costa",
+                deadline: "Em 3 dias",
+                priority: "Baixa"
+            }
+        ];
+
+        mockSuggestions.forEach(suggestion => {
+            const suggestionElement = document.createElement('div');
+            suggestionElement.className = 'suggestion-item';
+            suggestionElement.innerHTML = `
+                <svg class="ai-icon" width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <div>
+                    <strong>${suggestion.task}</strong><br>
+                    Responsável: ${suggestion.assignee}<br>
+                    Prazo: ${suggestion.deadline}<br>
+                    Prioridade: ${suggestion.priority}
+                </div>
+                <button class="accept-button">Aceitar</button>
+            `;
+            suggestionsList.appendChild(suggestionElement);
+        });
+    }, 2000);
+}
+</script>
+</body></html>
